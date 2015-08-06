@@ -1,0 +1,34 @@
+{
+  "name": "CGI-Ex-JS",
+  "version": "0.0.1",
+  "description": "JavaScript port of the CGI::Ex::App Perl module",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ljepson/CGI-Ex-JS"
+  },
+  "keywords": [
+    "cgiex",
+    "cgi-ex",
+    "node-app"
+  ],
+  "author": "ljepson",
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "dependencies": {
+    "underscore": "~1.8.3",
+    "quip": "~0.1.2",
+    "connect": "~3.4.0",
+    "serve-favicon": "~2.3.0"
+  },
+  "bugs": {
+    "url": "https://github.com/ljepson/CGI-Ex-JS/issues"
+  },
+  "homepage": "https://github.com/ljepson/CGI-Ex-JS"
+}

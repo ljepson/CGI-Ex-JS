@@ -1,6 +1,7 @@
 var connect = require('connect')();
 var quip = require('quip');
 var url = require('url');
+var favicon = require('serve-favicon');
 
 var AppClass = require('lib/app');
 var TemplateClass = require('lib/template');
@@ -89,20 +90,17 @@ var App = AppClass.extend(function() {
 });
 
 // Favicons support
-var favicon = require('serve-favicon');
-
 connect.use(favicon(__dirname + '/favicon.ico'));
 
-connect.use(quip, function(req, res) {
+connect.use(function(req, res) {
     'use strict';
 
-    var app = new App(req, res);
-
+    var app = new App(req, quip(res));
     var pathname = url.parse(req.url).pathname;
 
     app.path_info(pathname);
 
-    app.navigate(req, res);
+    app.navigate(req, quip(res));
 });
 
 exports = module.exports = connect;

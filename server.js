@@ -1,4 +1,4 @@
-var PORT = 8080;
+var PORT = 3000;
 
 var http = require('http');
 var connect = require('./app');

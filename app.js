@@ -1,30 +1,16 @@
 var connect = require('connect')();
-var quip = require('quip');
 var url = require('url');
 var favicon = require('serve-favicon');
+var bodyParser = require('body-parser');
+var morgan = require('morgan');
 
 var AppClass = require('lib/app');
 var TemplateClass = require('lib/template');
 
-var Template = TemplateClass.extend(function() {
-    'use strict';
-
-    this.die = function die(error) {
-        console.error(error);
-    };
-});
+var Template = TemplateClass.extend(function() {});
 
 var App = AppClass.extend(function() {
     'use strict';
-
-    this.die = function die(error) {
-        console.error(error);
-
-        this.__res.end(JSON.stringify(error));
-
-        console.trace();
-        throw error;
-    };
 
     this.template_obj = function template_obj(args) {
         if (this._template_obj) {
@@ -89,18 +75,45 @@ var App = AppClass.extend(function() {
 
 });
 
+// Logging
+connect.use(morgan('combined', {
+    skip: function(req, res) {
+        'use strict';
+
+        return 400 > res.statusCode;
+    }
+}));
+
 // Favicons support
 connect.use(favicon(__dirname + '/favicon.ico'));
 
-connect.use(function(req, res) {
+// Parse requests - application/x-www-form-urlencoded
+connect.use(bodyParser.urlencoded({extended: false}));
+
+// Parse requests - application/json
+connect.use(bodyParser.json());
+
+// Boot up main application
+connect.use(function(req, res, next) {
     'use strict';
 
-    var app = new App(req, quip(res));
+    var app = new App(req, res);
     var pathname = url.parse(req.url).pathname;
 
     app.path_info(pathname);
 
-    app.navigate(req, quip(res));
+    try {
+        app.navigate(req, res);
+    } catch(err) {
+        next(err);
+    }
+});
+
+// 404 error
+connect.use(function(err, req, res, next) {
+    'use strict';
+
+    res.end(err.message);
 });
 
 exports = module.exports = connect;

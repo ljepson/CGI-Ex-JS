@@ -22,13 +22,22 @@
     "node": ">=0.8.0"
   },
   "dependencies": {
-    "underscore": "~1.8.3",
-    "quip": "~0.1.2",
     "connect": "~3.4.0",
-    "serve-favicon": "~2.3.0"
+    "quip": "~0.1.2",
+    "serve-favicon": "~2.3.0",
+    "underscore": "~1.8.3"
   },
   "bugs": {
     "url": "https://github.com/ljepson/CGI-Ex-JS/issues"
   },
-  "homepage": "https://github.com/ljepson/CGI-Ex-JS"
+  "homepage": "https://github.com/ljepson/CGI-Ex-JS",
+  "devDependencies": {
+    "body-parser": "^1.13.3",
+    "gulp": "^3.9.0",
+    "gulp-livereload": "^3.8.0",
+    "gulp-load-plugins": "^1.0.0-rc.1",
+    "gulp-node-debug": "0.0.3",
+    "gulp-nodemon": "^2.0.3",
+    "morgan": "^1.6.1"
+  }
 }

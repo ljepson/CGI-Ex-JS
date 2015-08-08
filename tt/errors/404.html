@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title><%= message %></title>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            background-color: #FEFEFE;
+            color: #333;
+            font: 400 16px/1.4 'Open Sans', sans-serif;
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+        #container {
+            max-width: 60em;
+            min-width: 40em;
+        }
+        #container .wrapper {
+            margin: 0 auto;
+            padding: 2em;
+            width: 100%;
+        }
+        <% if (is_dev) { %>
+        .dev-view {
+            color: #333;
+            text-align: center;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            border: 1px #F00 solid;
+            background-color: rgba(255, 0, 0, .25);
+            padding: .1em;
+        }
+        .dev-view h3 {
+            margin: .25em 0;
+        }
+        <% } %>
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="wrapper">
+            <% if (is_dev) { %>
+            <div class="dev-view">
+                <h3>Warning: development view is enabled</h3>
+            </div>
+            <% } %>
+            <h2><%= message %></h2>
+            <pre>
+            <%
+                if (is_dev) {
+                    var split = stack.split(/\n/);
+                    var rows = [];
+
+                    for (var i = 0; i < split.length; i++) {
+                        // Colorize the text between parens...
+                        var row = split[i].replace(
+                            /\(([^)]+)(:.*?:.*?)[^)]\)/g,
+                            '(<span style="color:red;">$1</span>$2)'
+                        );
+
+                        print('\n' + row);
+                    }
+                }
+            %>
+            </pre>
+        </div>
+    </div>
+</body>
+</html>

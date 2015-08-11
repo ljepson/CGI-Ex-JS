@@ -2,17 +2,37 @@ var connect = require('connect')();
 var bodyParser = require('body-parser');
 var favicon = require('serve-favicon');
 var morgan = require('morgan');
-var meld = require('meld');
+var path = require('path');
 var quip = require('quip');
 var url = require('url');
+var _ = require('underscore');
 
 var AppClass = require('./lib/app');
 var TemplateClass = require('./lib/template');
 
-var Template = TemplateClass.extend(function() {});
+var Template = TemplateClass.extend(function() {
+    'use strict';
+
+    this.split_paths = function(_path) {
+        if (_.isArray(_path)) {
+            return _path;
+        }
+
+        var PATH = process.env.PATH.split(path.delimiter);
+
+        PATH.push(_path);
+
+        return PATH;
+    };
+
+});
 
 var App = AppClass.extend(function() {
     'use strict';
+
+    this.base_dir_abs = function() {
+        return this._base_dir_abs || (this._base_dir_abs = ['tt']);
+    };
 
     this.template_obj = function template_obj(args) {
         if (this._template_obj) {
@@ -77,59 +97,14 @@ var App = AppClass.extend(function() {
 
 });
 
-function get_methods(target) {
-    'use strict';
-
-    return Object.keys(target).filter(function(method) {
-        return 'function' === typeof target[method];
-    });
-}
-
-function after_log(result) {
-    'use strict';
-
-    var joinpoint = meld.joinpoint();
-    var print_result;
-
-    var args = joinpoint.args;
-
-    for (var i = 0; i < args.length; i++) {
-        // Response object
-        if (args[i] instanceof require('http').ServerResponse) {
-            args.splice(i, 1, 'res');
-
-            continue;
-        }
-
-        // Request object
-        if (args[i] instanceof require('http').IncomingMessage) {
-            args.splice(i, 1, 'req');
-
-            continue;
-        }
-    }
-
-    if (result === this) { // jshint ignore:line
-        print_result = 'self-reference';
-    }
-
-    if ('function' === typeof result) {
-        print_result = 'function() {}';
-    }
-
-    if ('history' === joinpoint.method) {
-        print_result = 'TRUNCATED HISTORY';
-    }
-
-    console.log(joinpoint.method);
-    console.log('args:', args);
-    console.log('return:', print_result || result);
-    console.log('--');
-}
-
+// Print out the results of each method while in debug mode
 if ('debug' === process.env.NODE_ENV) {
-    meld.after(App, get_methods, after_log);
-    meld.after(App.prototype, get_methods, after_log);
+    var meld = require('meld');
+    var debug_utils = require('./debug-utils');
+
+    // Allows wrapping each method call to see their arguments and returns
+    meld.after(App, debug_utils.get_methods, debug_utils.after_log);
+    meld.after(App.prototype, debug_utils.get_methods, debug_utils.after_log);
 }
 
 // Logging
@@ -150,32 +125,42 @@ connect.use(bodyParser.urlencoded({extended: false}));
 // Parse requests - application/json
 connect.use(bodyParser.json());
 
-connect.use(quip);
-
 // Boot up main application
 connect.use(function(req, res, next) {
     'use strict';
 
-    var app = new App(req, res);
+    var app = new App(
+        req,
+        quip(res)
+    );
+
     var pathname = url.parse(req.url).pathname;
 
     app.path_info(pathname);
 
+    var exception;
+
     try {
         app.navigate(req, res);
+
+        exception = false;
     } catch(err) {
-        next(err);
+        exception = err;
+    }
+
+    if (exception) {
+        next(exception);
     }
 });
 
 // Error - 404
-connect.use(require('./routes/404'));
+connect.use(require('./routes/errors/404'));
 
 // Error - 500
 connect.use(function(err, req, res, next) { // jshint ignore:line
     'use strict';
 
-    res.end(err.message);
+    quip(res).end(err.message);
 });
 
 exports = module.exports = connect;

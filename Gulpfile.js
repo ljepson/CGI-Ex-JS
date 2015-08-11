@@ -6,7 +6,9 @@ gulp.task('debug', function() {
 
     gulp.src(['server.js'])
         .pipe(plugins.nodeDebug({
-            debugBrk: true
+            debugBrk: false,
+            noPreload: true,
+            cli: true
         }));
 });
 

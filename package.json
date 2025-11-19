@@ -4,7 +4,10 @@
   "description": "JavaScript port of the CGI::Ex::App Perl module - Web application framework with validation and multi-step workflows",
   "main": "lib/app.js",
   "scripts": {
-    "test": "node examples/simple-form.js",
+    "test": "mocha",
+    "test:unit": "mocha test/unit/**/*.test.js",
+    "test:integration": "mocha test/integration/**/*.test.js",
+    "test:watch": "mocha --watch",
     "start": "node server.js",
     "example": "node examples/simple-form.js"
   },
@@ -24,6 +27,12 @@
   },
   "dependencies": {
     "underscore": "^1.13.6"
+  },
+  "devDependencies": {
+    "mocha": "^10.2.0",
+    "chai": "^4.3.10",
+    "sinon": "^17.0.1",
+    "supertest": "^6.3.3"
   },
   "optionalDependencies": {
     "connect": "^3.7.0",

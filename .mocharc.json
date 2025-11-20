@@ -1,0 +1,6 @@
+{
+  "reporter": "spec",
+  "timeout": 5000,
+  "recursive": true,
+  "spec": "test/**/*.test.js"
+}

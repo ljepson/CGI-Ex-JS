@@ -59,6 +59,26 @@ describe('Validate', function() {
             expect(result.errors).to.have.property('email');
         });
 
+        it('should reject email with double @', function() {
+            const result = validator.validate(
+                {email: 'test@@example.com'},
+                {email: {type: 'email'}}
+            );
+
+            expect(result).to.not.be.null;
+            expect(result.errors).to.have.property('email');
+        });
+
+        it('should reject email with spaces', function() {
+            const result = validator.validate(
+                {email: 'test @example.com'},
+                {email: {type: 'email'}}
+            );
+
+            expect(result).to.not.be.null;
+            expect(result.errors).to.have.property('email');
+        });
+
         it('should accept valid email', function() {
             const result = validator.validate(
                 {email: 'test@example.com'},
